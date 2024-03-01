@@ -20,7 +20,7 @@ function Home() {
     };
 
     const logInLogOut = (EndPoint) => {
-        fetch(`https://localhost:7115/Sim/${EndPoint}`, {
+        fetch(`http://localhost:5000/Sim/${EndPoint}`, {
             method: "POST",
             headers: {
                 'Content-type': 'application/json',

@@ -44,7 +44,7 @@ function Login() {
 
     // Function to perform user login using email and password.
     const logIn = () => {
-        fetch("https://localhost:7115/User/Login", {
+        fetch("http://localhost:5000/User/Login", {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json'
