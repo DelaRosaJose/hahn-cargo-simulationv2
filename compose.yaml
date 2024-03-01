@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./HahnCargoSim   # Path to the BackEnd directory
+    ports:
+      - "5000:80"  # Adjust the port if necessary
+
+  frontend:
+    build:
+      context: ./hahn-cargo-simulation   # Path to the FrontEnd directory
+    ports:
+      - "3000:80"  # Adjust the port if necessary
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
