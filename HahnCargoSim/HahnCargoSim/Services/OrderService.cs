@@ -146,7 +146,7 @@ namespace HahnCargoSim.Services
 
     private static void SendNewOrderMessage(Order order)
     {
-      var connectionFactory = new ConnectionFactory { HostName = "localhost" };
+      var connectionFactory = new ConnectionFactory { HostName = "host.docker.internal" };
       using var connection = connectionFactory.CreateConnection();
       using var channel = connection.CreateModel();
 

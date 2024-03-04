@@ -14,7 +14,7 @@ function Home() {
 
     const StartStopButtonClick = () => {
         
-        setStarter(started === "Start" ? "Stop" : "Starth");
+        setStarter(started === "Start" ? "Stop" : "Start");
 
         logInLogOut(started);
     };
@@ -40,7 +40,32 @@ function Home() {
 
     };
 
+    const CreateOrderButtonClick = () => {
+        fetch(`http://localhost:5000/Order/Create`, {
+            method: "POST",
+            headers: {
+                'Content-type': 'application/json',
+                'Authorization': `Bearer ${token}`, // notice the Bearer before your token
+            },
+        })
+            .then(async (data) => {
+                // Check if the response is successful
+                if (data.ok) {
+                    window.alert("Order created Succefully");
+                }
+            })
+            .catch(error => {
+                // Handle any fetch errors here
+                console.error('Fetch error:', error);
+            });
+    };
+
     return <div className="mainContainer">
+     <input
+            className={"inputButton"}
+            type="button"
+            onClick={CreateOrderButtonClick}
+            value="Create Order"/>
         <input
             className={"inputButton"}
             type="button"
