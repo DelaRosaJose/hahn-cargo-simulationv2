@@ -1,8 +1,22 @@
-import { useState } from "react"
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { io } from 'socket.io-client';
 
 
+const socket = io('http://localhost:9081');
 function Home() {
+    useEffect(() => {
+        // Event listener for new messages from the server
+        socket.on('newQueuemessage', (message) => {
+            setMessages((prevMessages) => [...prevMessages, message]);
+        });
+
+        // Clean up the event listener on component unmount
+        return () => {
+            socket.disconnect();
+        };
+    }, []);
+    const [messages, setMessages] = useState([]);
     const [started, setStarter] = useState("Start");
     const navigate = useNavigate();
     const token = localStorage.getItem("token");
@@ -13,7 +27,7 @@ function Home() {
     };
 
     const StartStopButtonClick = () => {
-        
+
         setStarter(started === "Start" ? "Stop" : "Start");
 
         logInLogOut(started);
@@ -60,17 +74,37 @@ function Home() {
             });
     };
 
+    const MessagesReceiverButtonClick = async () => {
+        // const socket = socket.connect('http://localhost:4000');
+        // socket.on('messageResponse', (data) => setMessages([...messages, data]));
+        // console.log(socket)
+    }
+
+
+
     return <div className="mainContainer">
-     <input
+        <ul>
+            {messages.map((message, index) => (
+                <li key={index}>{message}</li>
+            ))}
+        </ul>
+        <input
+            className={"inputButton"}
+            type="button"
+            onClick={MessagesReceiverButtonClick}
+            value="Receiver messages" />
+
+        <input
             className={"inputButton"}
             type="button"
             onClick={CreateOrderButtonClick}
-            value="Create Order"/>
+            value="Create Order" />
+
         <input
             className={"inputButton"}
             type="button"
             onClick={StartStopButtonClick}
-            value={started}/>
+            value={started} />
         <div className={"titleContainer"}>
             <div>Welcome!</div>
         </div>

@@ -12,16 +12,24 @@ services:
       context: ./hahn-cargo-simulation   # Path to the FrontEnd directory
     ports:
       - "3000:80"  # Adjust the port if necessary
-    develop:
-      watch:
-        - path: ./hahn-cargo-simulation/package.json
-          action: rebuild
-        - path: ./hahn-cargo-simulation
-          target: /usr/src/app
-          action: sync
-    environment:
-      - CHOKIDAR_USEPOLLING=true
+    # develop:
+    #   watch:
+    #     - path: ./hahn-cargo-simulation/package.json
+    #       action: rebuild
+    #     - path: ./hahn-cargo-simulation
+    #       target: /usr/src/app
+    #       action: sync
+    # environment:
+    #   - CHOKIDAR_USEPOLLING=true
 
+  consumer:
+    build:
+      context: ./hahn-cargo-simulation/consumer  # Ajusta la ruta al directorio del consumidor
+    ports:
+      - "9081:9081"
+    depends_on:
+      - rabbitmq
+      
   rabbitmq:
     image: rabbitmq:3-management
     container_name: rabbitmq
