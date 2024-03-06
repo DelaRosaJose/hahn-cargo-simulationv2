@@ -62,7 +62,8 @@ function Login() {
                     navigate("/Home");
                 } else {
                     // If the response is not successful, show an alert with an error message.
-                    window.alert("Wrong email or password");
+                    // window.alert("Wrong email or password");
+                    setPasswordError("Wrong email or password");
                 }
             })
             .catch(error => {

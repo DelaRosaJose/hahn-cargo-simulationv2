@@ -1,0 +1,21 @@
+/* OrderInformation.css (Create a separate CSS file for your component) */
+
+.order-information-container {
+    border: 1px solid #ccc;
+    padding: 15px;
+    margin: 10px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .order-information-title {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+  }
+  
+  .order-information-item {
+    margin-bottom: 8px;
+  }
+  
+  /* Customize styles as needed */
+  
