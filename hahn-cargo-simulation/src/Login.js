@@ -1,23 +1,17 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-// The Login component receives props from its parent component.
 function Login() {
-    // State variables to store email, password, and corresponding error messages.
     const [userName, setUserName] = useState("");
     const [userNameError, setUserNameError] = useState("");
     const [password, setPassword] = useState("");
     const [passwordError, setPasswordError] = useState("");
 
-    // React Router hook to enable navigation within the application.
     const navigate = useNavigate();
 
-    // Function to handle the button click event.
     const onButtonClick = () => {
-        // Set initial error values to empty.
         setPasswordError("");
 
-        // Validation checks for email and password.
         if ("" === userName) {
             setUserNameError("Please enter your UserName");
             return;
@@ -38,11 +32,9 @@ function Login() {
             return;
         }
 
-        // If validation passes, initiate the login process.
         logIn();
     };
 
-    // Function to perform user login using email and password.
     const logIn = () => {
         fetch("http://localhost:5000/User/Login", {
             method: "POST",
@@ -52,28 +44,20 @@ function Login() {
             body: JSON.stringify({ username: userName, password })
         })
             .then(async (data) => {
-                // Check if the response is successful
                 if (data.ok) {
-                    // Extract the token from the response data
                     const DeserializedData = await data.json();
 
-                    // Store user information in local storage, update the state, and navigate to the home page.
                     localStorage.setItem("token", DeserializedData.token);
                     navigate("/Home");
                 } else {
-                    // If the response is not successful, show an alert with an error message.
-                    // window.alert("Wrong email or password");
                     setPasswordError("Wrong email or password");
                 }
             })
             .catch(error => {
-                // Handle any fetch errors here
                 console.error('Fetch error:', error);
             });
-
     };
 
-    // JSX structure representing the login form.
     return (
         <div className={"mainContainer"}>
             <div className={"titleContainer"}>
@@ -110,5 +94,4 @@ function Login() {
     );
 }
 
-// Export the Login component.
 export default Login;

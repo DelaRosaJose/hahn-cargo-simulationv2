@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import './OrderInformation.css'; // Adjust the path based on your project structure
+import './OrderInformation.css';
 
-const OrderInformation = ({ order, token, backendURL, AcceptedOrdersFunction, createdOrders = false }) => {
+const OrderInformation = ({ order, token, backendURL, AcceptedOrdersFunction, SearchTransporters, createdOrders = false }) => {
 
   const [buttonPressed, setButtonPressed] = useState(false);
 
@@ -16,8 +16,6 @@ const OrderInformation = ({ order, token, backendURL, AcceptedOrdersFunction, cr
   } = order;
 
   const AcceptOrderButtonClick = () => {
-    // console.log('Order ID clicked:', id);
-
     fetch(`${backendURL}Order/Accept?orderId=${id}`, {
       method: "POST",
       headers: {
@@ -29,15 +27,9 @@ const OrderInformation = ({ order, token, backendURL, AcceptedOrdersFunction, cr
         if (response.ok) {
           setButtonPressed(true);
           AcceptedOrdersFunction();
+          SearchTransporters();
         }
-
-        // Parse the JSON data
-        // return response.json();
       })
-      // .then(data => {
-      //     // Handle the parsed JSON data
-      //     console.log('Parsed data:', data);
-      // })
       .catch(error => {
         console.error('Fetch error:', error);
       });

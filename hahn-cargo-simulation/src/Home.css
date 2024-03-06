@@ -6,29 +6,27 @@
     background-color: rgb(103, 14, 14);
 }
 
-.orderlist {
-    overflow: auto;
-    /* max-height: 39.5vw; */
-    
-    max-height: 45.5vw;
-    align-self: start;
-    max-width: 700px;
-    flex-direction: column;
-}
 .countList {
     
     align-self: start;
     font-size: 100%;
-    margin-left: 60px;
     font-weight: bolder;
-    /* max-width: 700px;
-    flex-direction: column;
-    overflow: auto;
-    max-height: 1500px; */
+    
+    margin: 10px;
+   
 }
 
 .horizontalContainer {
     display: flex;
+    height: 79%;
+    width: 100%;
+    justify-content: space-evenly;
+  }
+  .listdiv {
+    
+    max-height: 100%;
+    overflow: auto;
+    scrollbar-width: thin;
   }
   
 .coinsContainer {
@@ -39,8 +37,33 @@
     align-items: center;
     justify-content: center;
 }
-.grid{
 
+.listContainer {
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    max-height: 100%;
+    overflow: hidden;
+    width: 25%;
 }
-/* 
-    */
+
+.buy.Button {
+    border: none;
+    background: rgba(255, 230, 0, 0.712);
+    color: rgb(0, 0, 0);
+    padding: 10px 7px;
+    margin-top: 10px;
+    font-size: 18px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+.buyControl {
+    
+    flex-direction: row;
+    display: flex;
+}
+.inputNode{
+  font-size: large;
+  border-radius: 8px;
+  border: 1px solid grey;
+  padding-left: 8px;
+}

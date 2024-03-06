@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { io } from 'socket.io-client';
 import './Home.css';
 import OrderInformation from "./Components/OrderInformation";
+import TransporterInformation from './Components/TransporterInformation';
 
 const Backendurl = 'http://localhost:5000/'
 const socket = io('http://localhost:9081');
@@ -15,12 +16,15 @@ function Home() {
 
     }, []);
 
+    const [countTransporters, setCountTransporters] = useState(0);
     const [orders, setOrders] = useState([]);
     const [acceptedOrders, setAcceptedOrders] = useState([]);
+    const [transporters, settransporters] = useState([]);
     const [started, setStarter] = useState("Start");
+    const [node, setNode] = useState(0);
     const [fetchSuccess, setFetchSuccess] = useState(false);
     const [coins, setCoins] = useState(0);
-    // const navigate = useNavigate();
+    
     const token = localStorage.getItem("token");
 
     const GetterCoins = () => {
@@ -34,7 +38,6 @@ function Home() {
             .then(async (data) => {
                 if (data.ok) {
                     setCoins(await data.json());
-                    // console.log(coins);
                 }
             })
             .catch(error => {
@@ -54,7 +57,6 @@ function Home() {
                 if (data.ok) {
                     const deserializejson = await data.json();
                     console.log(deserializejson);
-                    // window.alert(`Grids Getters Succefully`);
                 }
             })
             .catch(error => {
@@ -92,7 +94,6 @@ function Home() {
         })
             .then(async (data) => {
                 if (data.ok) {
-                    // window.alert(`Task ${EndPoint}`);
                     setFetchSuccess(true);
                 }
             })
@@ -113,7 +114,6 @@ function Home() {
         })
             .then(async (data) => {
                 if (data.ok) {
-                    // window.alert("Order created Succefully");
                 }
             })
             .catch(error => {
@@ -129,26 +129,15 @@ function Home() {
                 'Authorization': `Bearer ${token}`,
             },
         })
-            // .then(async (data) => {
-            //     if (data.ok) {
-            //         //const parsedAcceptedOrders = JSON.parse(data);
-            //         console.log(data);
-            //         console.log(await data);
-            //         // window.alert("Order created Succefully");
-            //     }
-            // })
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
 
-                // Parse the JSON data
                 return response.json();
             })
             .then(data => {
-                // Handle the parsed JSON data
                 setAcceptedOrders(data);
-                // console.log('Parsed data:', data);
             })
             .catch(error => {
                 console.error('Fetch error:', error);
@@ -156,98 +145,144 @@ function Home() {
     };
 
 
+    const BuyTransporterButtonClick = () => {
+        fetch(`${Backendurl}CargoTransporter/buy?positionNodeId=${node}`, {
+            method: "POST",
+            headers: {
+                'Content-type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
 
+                GetterCoins();
+                return response.json();
+            })
+            .then(data => {
+                if (data === -1) {
+                    window.alert("No sufficient coins.")
+                }
+                else {
+                    setCountTransporters(data);
+                    ExecuteGetTransporters(data);
+
+                }
+            })
+            .catch(error => {
+                console.error('Fetch error:', error);
+            });
+    };
+
+    const ExecuteGetTransporters = (Canttransporters) => {
+        settransporters([]);
+        for (let index = 1; index <= Canttransporters; index++) {
+            GetterTransporters(index);
+        }
+    };
+
+    const GetterTransporters = (TransporterId) => {
+        fetch(`${Backendurl}CargoTransporter/Get?transporterId=${TransporterId}`, {
+            method: "GET",
+            headers: {
+                'Content-type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+        })
+            .then(async (response) => {
+                if (response.status === 200) {
+                    const parsedTransporters = await response.json();
+
+                    settransporters((prevTransporters) => [...prevTransporters, parsedTransporters]);
+                }
+
+
+            })
+            .catch(error => {
+                console.error('Fetch error:', error);
+            });
+    };
 
     return <div className="mainContainer">
-        <div className={"coinsContainer"}>Your Coins {coins}</div>
         <div>
-            <input
-                className={`inputButtonStartStop ${fetchSuccess && started === 'Stop' ? 'stop' : 'start'}`}
-                type="button"
-                onClick={StartStopButtonClick}
-                value={`${started} Simulation`} />
+            <div className={"coinsContainer"}>Your Coins {coins}</div>
+            <div>
+                <input
+                    className={`inputButtonStartStop ${fetchSuccess && started === 'Stop' ? 'stop' : 'start'}`}
+                    type="button"
+                    onClick={StartStopButtonClick}
+                    value={`${started} Simulation`} />
 
-            <input
-                className={"inputButton"}
-                type="button"
-                onClick={CreateOrderButtonClick}
-                value="Create Order" />
-
-
+                <input
+                    className={"inputButton"}
+                    type="button"
+                    onClick={CreateOrderButtonClick}
+                    value="Create Order" />
+            </div>
         </div>
-
 
         <div className="horizontalContainer">
 
-            <div>
+            <div className="listContainer">
                 <div className={"countList"}>Real time orders: {orders.length}</div>
+                <div className="listdiv">
+                    <ul className={"orderlist"}>
+                        {orders.map((message, index) => (
+                            <OrderInformation order={message} token={token} backendURL={Backendurl} AcceptedOrdersFunction={SearchtAcceptedOrders} 
+                            SearchTransporters={() => ExecuteGetTransporters(countTransporters)} />
+                        ))}
+                    </ul>
+                </div>
 
-                <ul className={"orderlist"}>
-                    {orders.map((message, index) => (
-                        <OrderInformation order={message} token={token} backendURL={Backendurl} AcceptedOrdersFunction={SearchtAcceptedOrders} />
-                    ))}
-                </ul>
             </div>
 
-            <div>
+            <div className="listContainer">
                 <div className={"countList"}>Orders Accepted: {acceptedOrders.length}</div>
-
-                <ul className={"orderlist"}>
-                    {acceptedOrders.map((orderAccepted, index) => (
-                        <OrderInformation order={orderAccepted} token={token} backendURL={Backendurl} AcceptedOrdersFunction={SearchtAcceptedOrders} createdOrders = {true} />
-                    ))}
-                </ul>
+                <div className="listdiv">
+                    <ul className={"orderlist"}>
+                        {acceptedOrders.map((orderAccepted, index) => (
+                            <OrderInformation order={orderAccepted} token={token} backendURL={Backendurl} AcceptedOrdersFunction={SearchtAcceptedOrders} 
+                            SearchTransporters={() => ExecuteGetTransporters(countTransporters)} createdOrders={true} />
+                        ))}
+                    </ul>
+                </div>
             </div>
 
-            {/* <div className={"countList"}>List Count ={orders.length}</div>
+            <div className="listContainer">
+                <div className={"countList"}>Transporters: {countTransporters}</div>
+                <div className="buyControl">
 
-            <ul className={"orderlist"}>
-                {orders.map((message, index) => (
-                    <OrderInformation order={message} token={token} backendURL={Backendurl} AcceptedOrdersFunction={SearchtAcceptedOrders} />
-                ))}
-            </ul> */}
+                    <input
+                        className="buy Button"
+                        type="button"
+                        onClick={BuyTransporterButtonClick}
+                        value="Buy Transporter" />
+
+                    <input
+                        value={node}
+                        className="inputNode"
+                        placeholder="Enter a node"
+                        type="number"
+                        onChange={ev => setNode(ev.target.value)}
+                    />
+
+                </div>
+                <div className="listdiv">
+                    <ul className={"orderlist"}>
+                        {transporters.map((transporter, index) => (
+                            <TransporterInformation key={transporter.id} transporter={transporter} />
+                        ))}
+                    </ul>
+                </div>
+            </div>
 
         </div>
 
-        {/* </div> */}
-
-        {/*  
-        <ul className={"createdorderlist"}>
-            {orders.map((message, index) => (
-                <OrderInformation order={message} token={token} backendURL={Backendurl} AcceptedOrdersFunction ={SearchtAcceptedOrders} />
-            ))}
-        </ul> */}
-        {/* <input
-            className={"inputButton"}
-            type="button"
-            onClick={MessagesReceiverButtonClick}
-            value="Info" /> */}
-        {/* <input
-            className={"inputButton"}
-            type="button"
-            onClick={MessagesReceiverButtonClick}
-            value="Receiver messages" />
- */}
 
 
-
-        {/* <div className={"titleContainer"}>
-            <div>Welcome!</div>
-        </div>
-        <div>
-            This is the home page.
-        </div>
-        <div className={"buttonContainer"}>
-            <input
-                className={"inputButton"}
-                type="button"
-                onClick={onButtonClick}
-                value="Log out" /> */}
-
-        {/* </div> */}
-
-
-    </div>;
+    </div >;
 }
 
 export default Home
