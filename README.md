@@ -1,3 +1,7 @@
+
+
+### Watch my video here:  https://youtu.be/1c6uzdhU4Vc
+
 # Project Setup Guide
 
 ## Prerequisites
